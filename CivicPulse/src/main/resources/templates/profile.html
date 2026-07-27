@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse - User Profile</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #e0e7ff 0%, #ccfbf1 100%);
+            padding: 4rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/dashboard}">
+                <span class="fs-4">🏛️ CivicPulse</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3" th:if="${role == 'USER'}">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item me-3" th:if="${role == 'ADMIN'}">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">Resolution Console</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link active" th:href="@{/profile}">Profile</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/faq}">FAQ & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-secondary-custom py-1 px-3" th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="profile-header">
+            <div class="container">
+                <div class="avatar-circle" th:text="${#strings.substring(username, 0, 1)}">U</div>
+                <h2 class="fw-bold text-dark mb-1" th:text="${username}">User Full Name</h2>
+                <span th:text="${role}" class="badge bg-indigo-100 text-primary px-3 py-2 rounded-pill font-semibold">USER</span>
+                <p class="text-muted mt-2 mb-0" th:text="${email}">user@example.com</p>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    
+                    <!-- Stats Grid for USER -->
+                    <div class="row g-4 mb-5" th:if="${role == 'USER'}">
+                        <div class="col-md-4">
+                            <div class="stat-card text-center">
+                                <h6 class="text-uppercase text-muted fw-bold mb-1 small">Total Reported</h6>
+                                <h3 class="fw-extrabold text-dark mb-0" th:text="${totalComplaints}">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card text-center">
+                                <h6 class="text-uppercase text-muted fw-bold mb-1 small">Pending Resolution</h6>
+                                <h3 class="fw-extrabold text-dark mb-0" th:text="${pendingComplaints}">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-card text-center">
+                                <h6 class="text-uppercase text-muted fw-bold mb-1 small">Resolved Tasks</h6>
+                                <h3 class="fw-extrabold text-dark mb-0" th:text="${resolvedComplaints}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Card -->
+                    <div class="card-custom border shadow-sm">
+                        <h4 class="fw-bold text-dark mb-4">Account Information</h4>
+                        
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted small fw-bold">Full Name</label>
+                                <div class="p-2 bg-light border rounded text-dark fw-medium" th:text="${username}">Jane Doe</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted small fw-bold">Email Address</label>
+                                <div class="p-2 bg-light border rounded text-dark fw-medium" th:text="${email}">citizen@example.com</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted small fw-bold">Account Role</label>
+                                <div class="p-2 bg-light border rounded text-dark fw-medium" th:text="${role}">USER</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label text-muted small fw-bold">Account Status</label>
+                                <div class="p-2 bg-light border rounded text-success fw-medium">✔️ Active In-Memory</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4 mb-0" role="alert">
+                            ℹ️ CivicPulse runs in-memory. Profile configurations, newly registered accounts, and reports will reset when the Spring Boot server is restarted.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved. Empowering voices for a cleaner, safer tomorrow.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse - Report Issue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <!-- Navigation Bar (Logged In State) -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/dashboard}">
+                <span class="fs-4">🏛️ CivicPulse</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/profile}">Profile</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/faq}">FAQ & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-secondary-custom py-1 px-3" th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content d-flex align-items-center py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card-custom">
+                        <h2 class="fw-bold text-center text-dark mb-2">Report Community Issue</h2>
+                        <p class="text-muted text-center mb-4">Provide details about the issue to notify municipal teams.</p>
+
+                        <!-- Error Alert -->
+                        <div class="alert alert-danger" role="alert" th:if="${error != null}" th:text="${error}">
+                            Error message goes here.
+                        </div>
+
+                        <!-- Report Form -->
+                        <form th:action="@{/report}" th:object="${complaint}" method="post">
+                            <!-- Category Selection -->
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" th:field="*{category}" required>
+                                    <option value="" disabled selected>Select a category</option>
+                                    <option value="Pothole / Road Repair">Pothole / Road Repair</option>
+                                    <option value="Streetlight Malfunction">Streetlight Malfunction</option>
+                                    <option value="Garbage Collection">Garbage Collection</option>
+                                    <option value="Water Leakage">Water Leakage</option>
+                                    <option value="Illegal Parking">Illegal Parking</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+
+                            <!-- Title -->
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title / Short Summary</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="e.g. Broken pipe flooding sidewalk" required>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location / Address</label>
+                                <input type="text" class="form-control" id="location" th:field="*{location}" placeholder="e.g. 5th Avenue near Central Park" required>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label for="description" class="form-label">Detailed Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="4" placeholder="Describe the location, severity, and any other relevant details..." required></textarea>
+                            </div>
+
+                            <!-- Submit / Cancel Buttons -->
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <a th:href="@{/dashboard}" class="btn btn-secondary-custom flex-grow-1 text-center text-decoration-none">Cancel</a>
+                                <button type="submit" class="btn btn-primary-custom flex-grow-1">Submit Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved. Empowering voices for a cleaner, safer tomorrow.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

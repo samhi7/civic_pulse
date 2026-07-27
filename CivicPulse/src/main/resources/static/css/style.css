@@ -1,0 +1,179 @@
+/* Custom variables for styling */
+:root {
+    --primary-color: #4f46e5;       /* Modern Indigo */
+    --primary-hover: #4338ca;
+    --secondary-color: #06b6d4;     /* Tech Cyan */
+    --dark-bg: #0f172a;             /* Deep slate dark background */
+    --light-bg: #f8fafc;            /* Clean light grey background */
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    --border-radius: 12px;
+}
+
+body {
+    background-color: var(--light-bg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #334155;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar customization */
+.navbar-custom {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--primary-color) !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #475569 !important;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    font-weight: 600;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+}
+
+/* Custom Buttons */
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+.btn-secondary-custom {
+    background-color: transparent;
+    border: 2px solid #e2e8f0;
+    color: #475569;
+    font-weight: 500;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary-custom:hover {
+    border-color: #cbd5e1;
+    color: #1e293b;
+    background-color: #f1f5f9;
+}
+
+/* Cards styling */
+.card-custom {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 2.5rem;
+    transition: transform 0.3s ease;
+}
+
+/* Statistics cards */
+.stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    padding: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #e0e7ff 0%, #ccfbf1 100%);
+    padding: 6rem 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.05em;
+    background: linear-gradient(to right, #4f46e5, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Forms input focus customization */
+.form-control:focus {
+    border-color: #a5b4fc;
+    box-shadow: 0 0 0 3px rgba(165, 180, 252, 0.5);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #475569;
+}
+
+/* Footer Section */
+footer {
+    background-color: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+/* Badges for status */
+.badge-pending {
+    background-color: #fef3c7;
+    color: #d97706;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border-radius: 50rem;
+}
+
+.badge-in-progress {
+    background-color: #e0f2fe;
+    color: #0284c7;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border-radius: 50rem;
+}
+
+.badge-resolved {
+    background-color: #dcfce7;
+    color: #15803d;
+    font-weight: 600;
+    padding: 0.35em 0.65em;
+    border-radius: 50rem;
+}
