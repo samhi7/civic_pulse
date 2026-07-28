@@ -1,6 +1,5 @@
 package com.example.civicpulse.controller;
 
-import com.example.civicpulse.model.AuditLog;
 import com.example.civicpulse.model.Complaint;
 import com.example.civicpulse.model.User;
 import com.example.civicpulse.service.ComplaintService;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 @Controller
 public class MainController {
