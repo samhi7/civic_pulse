@@ -25,10 +25,10 @@ public class ComplaintService {
     private final UserRepository userRepository;
 
     @Autowired
-    public ComplaintService(ComplaintRepository complaintRepository, 
-                            ComplaintCommentRepository commentRepository,
-                            AuditLogRepository auditLogRepository,
-                            UserRepository userRepository) {
+    public ComplaintService(ComplaintRepository complaintRepository,
+            ComplaintCommentRepository commentRepository,
+            AuditLogRepository auditLogRepository,
+            UserRepository userRepository) {
         this.complaintRepository = complaintRepository;
         this.commentRepository = commentRepository;
         this.auditLogRepository = auditLogRepository;
@@ -58,15 +58,16 @@ public class ComplaintService {
         complaint.setAdminRemarks("Awaiting municipal review.");
         complaint.setDateSubmitted(LocalDate.now());
         complaint.setDateUpdated(LocalDate.now());
-        
+
         // Save first to obtain the auto-incremented database ID
         Complaint saved = complaintRepository.save(complaint);
-        
+
         // Generate a clean tracking number (e.g. CP-1001, CP-1002)
         saved.setComplaintId("CP-" + (1000 + saved.getId()));
-        
+
         // Log the action
-        logAction("Report Filed", "Complaint " + saved.getComplaintId() + " successfully filed by citizen " + user.getFullName(), user);
+        logAction("Report Filed",
+                "Complaint " + saved.getComplaintId() + " successfully filed by citizen " + user.getFullName(), user);
 
         return complaintRepository.save(saved);
     }
@@ -81,7 +82,8 @@ public class ComplaintService {
             complaint.setDateUpdated(LocalDate.now());
             complaintRepository.save(complaint);
 
-            logAction("Status Modified", "Complaint " + complaint.getComplaintId() + " changed from " + oldStatus + " to " + status + " with department: " + department, null);
+            logAction("Status Modified", "Complaint " + complaint.getComplaintId() + " changed from " + oldStatus
+                    + " to " + status + " with department: " + department, null);
         });
     }
 
@@ -97,7 +99,8 @@ public class ComplaintService {
             complaintRepository.save(complaint);
 
             String officerName = (officer != null) ? officer.getFullName() : "None";
-            logAction("Officer Assigned", "Complaint " + complaint.getComplaintId() + " assigned to officer " + officerName + " (" + department + ")", admin);
+            logAction("Officer Assigned", "Complaint " + complaint.getComplaintId() + " assigned to officer "
+                    + officerName + " (" + department + ")", admin);
         });
     }
 
@@ -112,7 +115,9 @@ public class ComplaintService {
             complaint.setDateUpdated(LocalDate.now());
             complaintRepository.save(complaint);
 
-            logAction("Progress Updated", "Officer " + officer.getFullName() + " updated " + complaint.getComplaintId() + " to " + status, officer);
+            logAction("Progress Updated",
+                    "Officer " + officer.getFullName() + " updated " + complaint.getComplaintId() + " to " + status,
+                    officer);
         });
     }
 
@@ -124,7 +129,9 @@ public class ComplaintService {
             complaint.setDateUpdated(LocalDate.now());
             complaintRepository.save(complaint);
 
-            logAction("Feedback Submitted", "Citizen submitted a " + rating + "-star rating for " + complaint.getComplaintId(), complaint.getUser());
+            logAction("Feedback Submitted",
+                    "Citizen submitted a " + rating + "-star rating for " + complaint.getComplaintId(),
+                    complaint.getUser());
         });
     }
 
@@ -133,7 +140,8 @@ public class ComplaintService {
         complaintRepository.findById(id).ifPresent(complaint -> {
             complaint.getSupportingUsers().add(user);
             complaintRepository.save(complaint);
-            logAction("Upvote Registered", "User " + user.getFullName() + " supported issue " + complaint.getComplaintId(), user);
+            logAction("Upvote Registered",
+                    "User " + user.getFullName() + " supported issue " + complaint.getComplaintId(), user);
         });
     }
 
@@ -142,7 +150,8 @@ public class ComplaintService {
         complaintRepository.findById(id).ifPresent(complaint -> {
             ComplaintComment comment = new ComplaintComment(text, user, complaint);
             commentRepository.save(comment);
-            logAction("Comment Added", "User " + user.getFullName() + " added a comment to " + complaint.getComplaintId(), user);
+            logAction("Comment Added",
+                    "User " + user.getFullName() + " added a comment to " + complaint.getComplaintId(), user);
         });
     }
 
@@ -157,8 +166,8 @@ public class ComplaintService {
     }
 
     public long getPendingCount(User user) {
-        return complaintRepository.countByUserAndStatus(user, "Pending") 
-             + complaintRepository.countByUserAndStatus(user, "Verified");
+        return complaintRepository.countByUserAndStatus(user, "Pending")
+                + complaintRepository.countByUserAndStatus(user, "Verified");
     }
 
     public long getResolvedCount(User user) {
@@ -172,14 +181,14 @@ public class ComplaintService {
 
     public long getGlobalPendingCount() {
         return complaintRepository.findAll().stream()
-            .filter(c -> !"Completed".equals(c.getStatus()))
-            .count();
+                .filter(c -> !"Completed".equals(c.getStatus()))
+                .count();
     }
 
     public long getGlobalResolvedCount() {
         return complaintRepository.findAll().stream()
-            .filter(c -> "Completed".equals(c.getStatus()))
-            .count();
+                .filter(c -> "Completed".equals(c.getStatus()))
+                .count();
     }
 
     // 14. Auditing

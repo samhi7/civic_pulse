@@ -42,10 +42,10 @@ public class MainController {
     // 2. AUTHENTICATION FLOW
     // ==========================================
     @GetMapping("/login")
-    public String loginPage(Model model, 
-                            @RequestParam(value = "registered", required = false) String registered, 
-                            @RequestParam(value = "error", required = false) String error, 
-                            @RequestParam(value = "success", required = false) String success) {
+    public String loginPage(Model model,
+            @RequestParam(value = "registered", required = false) String registered,
+            @RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "success", required = false) String success) {
         model.addAttribute("user", new User());
         if (registered != null && registered.equals("true")) {
             model.addAttribute("success", "Registration successful! Proceed to Login.");
@@ -61,8 +61,8 @@ public class MainController {
 
     @PostMapping("/login")
     public String loginUser(@ModelAttribute("user") User user, HttpSession session, Model model) {
-        if (user.getEmail() == null || user.getEmail().isEmpty() || 
-            user.getPassword() == null || user.getPassword().isEmpty()) {
+        if (user.getEmail() == null || user.getEmail().isEmpty() ||
+                user.getPassword() == null || user.getPassword().isEmpty()) {
             model.addAttribute("error", "Email and Password are required");
             return "login";
         }
@@ -158,14 +158,16 @@ public class MainController {
     @GetMapping("/welcome")
     public String welcomePage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         return "welcome";
     }
 
     @GetMapping("/onboarding/city")
     public String chooseCityPage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         return "choose_city";
     }
 
@@ -183,7 +185,8 @@ public class MainController {
     @GetMapping("/onboarding/locality")
     public String chooseLocalityPage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         return "choose_locality";
     }
 
@@ -202,13 +205,15 @@ public class MainController {
     public String completeProfilePage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
         User user = userService.findByEmail(email);
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
         model.addAttribute("avatarChar", user.getFullName().substring(0, 1).toUpperCase());
         return "complete_profile";
     }
 
     @PostMapping("/onboarding/profile")
-    public String saveProfile(@RequestParam("phone") String phone, @RequestParam("avatarChar") String avatarChar, HttpSession session) {
+    public String saveProfile(@RequestParam("phone") String phone, @RequestParam("avatarChar") String avatarChar,
+            HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
         User user = userService.findByEmail(email);
         if (user != null) {
@@ -224,16 +229,18 @@ public class MainController {
     // 4. CITIZEN CONSOLE (DASHBOARDS & VIEWS)
     // ==========================================
     @GetMapping("/dashboard")
-    public String dashboard(@RequestParam(value = "tab", required = false) String tab, HttpSession session, Model model) {
+    public String dashboard(@RequestParam(value = "tab", required = false) String tab, HttpSession session,
+            Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
-        
+
         if (email == null || !"USER".equals(role)) {
             return "redirect:/login?error=Access Denied";
         }
 
         User user = userService.findByEmail(email);
-        if (user == null) return "redirect:/logout";
+        if (user == null)
+            return "redirect:/logout";
 
         String activeTab = (tab != null && !tab.isEmpty()) ? tab : "reports";
         model.addAttribute("activeTab", activeTab);
@@ -243,7 +250,7 @@ public class MainController {
         model.addAttribute("totalComplaints", complaintService.getTotalCount(user));
         model.addAttribute("pendingComplaints", complaintService.getPendingCount(user));
         model.addAttribute("resolvedComplaints", complaintService.getResolvedCount(user));
-        
+
         model.addAttribute("complaints", complaintService.getComplaintsByUser(user));
         model.addAttribute("communityComplaints", complaintService.getAllComplaints());
 
@@ -253,7 +260,8 @@ public class MainController {
     @GetMapping("/explore")
     public String explorePage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         return "explore";
     }
 
@@ -261,7 +269,8 @@ public class MainController {
     public String myComplaintsPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
         User user = userService.findByEmail(email);
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
         model.addAttribute("complaints", complaintService.getComplaintsByUser(user));
         return "my_complaints";
     }
@@ -269,19 +278,21 @@ public class MainController {
     @GetMapping("/report")
     public String reportWizardPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         model.addAttribute("complaint", new Complaint());
         return "report_wizard";
     }
 
     @PostMapping("/report")
     public String fileComplaint(@ModelAttribute("complaint") Complaint complaint,
-                                @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles,
-                                @RequestParam(value = "videoFile", required = false) MultipartFile videoFile,
-                                HttpSession session) {
+            @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles,
+            @RequestParam(value = "videoFile", required = false) MultipartFile videoFile,
+            HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
         User user = userService.findByEmail(email);
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         // Save evidence files
         if (imageFiles != null) {
@@ -290,17 +301,22 @@ public class MainController {
                 if (file != null && !file.isEmpty()) {
                     String url = saveUploadedFile(file);
                     if (url != null) {
-                        if (imgIndex == 1) complaint.setImage1(url);
-                        else if (imgIndex == 2) complaint.setImage2(url);
-                        else if (imgIndex == 3) complaint.setImage3(url);
-                        else if (imgIndex == 4) complaint.setImage4(url);
-                        else if (imgIndex == 5) complaint.setImage5(url);
+                        if (imgIndex == 1)
+                            complaint.setImage1(url);
+                        else if (imgIndex == 2)
+                            complaint.setImage2(url);
+                        else if (imgIndex == 3)
+                            complaint.setImage3(url);
+                        else if (imgIndex == 4)
+                            complaint.setImage4(url);
+                        else if (imgIndex == 5)
+                            complaint.setImage5(url);
                         imgIndex++;
                     }
                 }
             }
         }
-        
+
         if (videoFile != null && !videoFile.isEmpty()) {
             String videoUrl = saveUploadedFile(videoFile);
             if (videoUrl != null) {
@@ -319,25 +335,26 @@ public class MainController {
         }
         try {
             String originalFileName = file.getOriginalFilename();
-            String cleanFileName = System.currentTimeMillis() + "_" + (originalFileName != null ? originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-_]", "_") : "upload");
-            
+            String cleanFileName = System.currentTimeMillis() + "_"
+                    + (originalFileName != null ? originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-_]", "_") : "upload");
+
             // Paths
             String baseDir = System.getProperty("user.dir");
             Path srcPath = Paths.get(baseDir, "src", "main", "resources", "static", "uploads");
             Path targetPath = Paths.get(baseDir, "target", "classes", "static", "uploads");
-            
+
             // Create directories
             Files.createDirectories(srcPath);
             Files.createDirectories(targetPath);
-            
+
             // Save to src
             Path srcFilePath = srcPath.resolve(cleanFileName);
             Files.write(srcFilePath, file.getBytes());
-            
+
             // Save to target
             Path targetFilePath = targetPath.resolve(cleanFileName);
             Files.write(targetFilePath, file.getBytes());
-            
+
             return "/uploads/" + cleanFileName;
         } catch (IOException e) {
             e.printStackTrace();
@@ -348,7 +365,8 @@ public class MainController {
     @GetMapping("/report/success/{id}")
     public String reportSuccessPage(@PathVariable("id") Long id, Model model) {
         Complaint complaint = complaintService.getComplaintById(id);
-        if (complaint == null) return "redirect:/dashboard";
+        if (complaint == null)
+            return "redirect:/dashboard";
         model.addAttribute("complaint", complaint);
         return "report_success";
     }
@@ -356,10 +374,12 @@ public class MainController {
     @GetMapping("/complaints/details/{id}")
     public String complaintDetailsPage(@PathVariable("id") Long id, HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
 
         Complaint complaint = complaintService.getComplaintById(id);
-        if (complaint == null) return "redirect:/dashboard";
+        if (complaint == null)
+            return "redirect:/dashboard";
 
         model.addAttribute("complaint", complaint);
         model.addAttribute("currentUserEmail", email);
@@ -367,13 +387,15 @@ public class MainController {
     }
 
     @PostMapping("/complaints/rate/{id}")
-    public String rateComplaint(@PathVariable("id") Long id, @RequestParam("rating") Integer rating, @RequestParam("feedback") String feedback) {
+    public String rateComplaint(@PathVariable("id") Long id, @RequestParam("rating") Integer rating,
+            @RequestParam("feedback") String feedback) {
         complaintService.submitRating(id, rating, feedback);
         return "redirect:/complaints/details/" + id;
     }
 
     @PostMapping("/complaints/comment/{id}")
-    public String addComment(@PathVariable("id") Long id, @RequestParam("commentText") String commentText, HttpSession session) {
+    public String addComment(@PathVariable("id") Long id, @RequestParam("commentText") String commentText,
+            HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
         User user = userService.findByEmail(email);
         if (user != null) {
@@ -395,7 +417,8 @@ public class MainController {
     @GetMapping("/map")
     public String cityMapPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         model.addAttribute("complaints", complaintService.getAllComplaints());
         return "city_map";
     }
@@ -403,7 +426,8 @@ public class MainController {
     @GetMapping("/community")
     public String communityPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
 
         model.addAttribute("currentUserEmail", email);
         model.addAttribute("communityComplaints", complaintService.getAllComplaints());
@@ -413,7 +437,8 @@ public class MainController {
     @GetMapping("/notifications")
     public String notificationsPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
 
         model.addAttribute("auditLogs", complaintService.getAuditLogs());
         return "notifications";
@@ -423,7 +448,8 @@ public class MainController {
     public String profilePage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
         User user = userService.findByEmail(email);
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         model.addAttribute("username", user.getFullName());
         model.addAttribute("email", user.getEmail());
@@ -443,14 +469,16 @@ public class MainController {
     @GetMapping("/settings")
     public String settingsPage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         return "settings";
     }
 
     @GetMapping("/help-center")
     public String helpCenterPage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
-        if (email == null) return "redirect:/login";
+        if (email == null)
+            return "redirect:/login";
         return "help_center";
     }
 
@@ -467,7 +495,8 @@ public class MainController {
         }
 
         User officer = userService.findByEmail(email);
-        if (officer == null) return "redirect:/logout";
+        if (officer == null)
+            return "redirect:/logout";
 
         model.addAttribute("username", officer.getFullName());
         model.addAttribute("tasks", complaintService.getComplaintsByOfficer(officer));
@@ -485,18 +514,19 @@ public class MainController {
         }
 
         Complaint complaint = complaintService.getComplaintById(id);
-        if (complaint == null) return "redirect:/officer/dashboard";
+        if (complaint == null)
+            return "redirect:/officer/dashboard";
 
         model.addAttribute("complaint", complaint);
         return "officer_update";
     }
 
     @PostMapping("/officer/update/{id}")
-    public String updateOfficerProgress(@PathVariable("id") Long id, 
-                                        @RequestParam("status") String status, 
-                                        @RequestParam("remarks") String remarks, 
-                                        @RequestParam(value = "afterPhotoUrl", required = false) String afterPhotoUrl, 
-                                        HttpSession session) {
+    public String updateOfficerProgress(@PathVariable("id") Long id,
+            @RequestParam("status") String status,
+            @RequestParam("remarks") String remarks,
+            @RequestParam(value = "afterPhotoUrl", required = false) String afterPhotoUrl,
+            HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
         User officer = userService.findByEmail(email);
         if (officer != null) {
@@ -510,10 +540,12 @@ public class MainController {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
 
-        if (email == null || !"OFFICER".equals(role)) return "redirect:/login";
+        if (email == null || !"OFFICER".equals(role))
+            return "redirect:/login";
 
         User officer = userService.findByEmail(email);
-        if (officer == null) return "redirect:/login";
+        if (officer == null)
+            return "redirect:/login";
 
         model.addAttribute("username", officer.getFullName());
         model.addAttribute("email", officer.getEmail());
@@ -548,7 +580,8 @@ public class MainController {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
 
-        if (email == null || !"ADMIN".equals(role)) return "redirect:/login";
+        if (email == null || !"ADMIN".equals(role))
+            return "redirect:/login";
 
         model.addAttribute("complaints", complaintService.getAllComplaints());
         return "admin_complaints";
@@ -559,10 +592,12 @@ public class MainController {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
 
-        if (email == null || !"ADMIN".equals(role)) return "redirect:/login";
+        if (email == null || !"ADMIN".equals(role))
+            return "redirect:/login";
 
         Complaint complaint = complaintService.getComplaintById(id);
-        if (complaint == null) return "redirect:/admin/complaints";
+        if (complaint == null)
+            return "redirect:/admin/complaints";
 
         model.addAttribute("complaint", complaint);
         model.addAttribute("officers", userService.findUsersByRole("OFFICER"));
@@ -570,11 +605,11 @@ public class MainController {
     }
 
     @PostMapping("/admin/assign/{id}")
-    public String handleAdminAssign(@PathVariable("id") Long id, 
-                                    @RequestParam("officerId") Long officerId, 
-                                    @RequestParam("department") String department, 
-                                    @RequestParam("remarks") String remarks, 
-                                    HttpSession session) {
+    public String handleAdminAssign(@PathVariable("id") Long id,
+            @RequestParam("officerId") Long officerId,
+            @RequestParam("department") String department,
+            @RequestParam("remarks") String remarks,
+            HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
         User admin = userService.findByEmail(email);
         if (admin != null) {
@@ -587,7 +622,8 @@ public class MainController {
     public String adminDepartmentsPage(HttpSession session) {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
-        if (email == null || !"ADMIN".equals(role)) return "redirect:/login";
+        if (email == null || !"ADMIN".equals(role))
+            return "redirect:/login";
         return "admin_departments";
     }
 
@@ -595,7 +631,8 @@ public class MainController {
     public String adminUsersPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
-        if (email == null || !"ADMIN".equals(role)) return "redirect:/login";
+        if (email == null || !"ADMIN".equals(role))
+            return "redirect:/login";
 
         // Fetch all users to display ledger
         model.addAttribute("usersList", userService.findUsersByRole("USER"));
@@ -606,7 +643,8 @@ public class MainController {
     public String adminLogsPage(HttpSession session, Model model) {
         String email = (String) session.getAttribute("loggedInEmail");
         String role = (String) session.getAttribute("loggedInRole");
-        if (email == null || !"ADMIN".equals(role)) return "redirect:/login";
+        if (email == null || !"ADMIN".equals(role))
+            return "redirect:/login";
 
         model.addAttribute("auditLogs", complaintService.getAuditLogs());
         return "admin_logs";
