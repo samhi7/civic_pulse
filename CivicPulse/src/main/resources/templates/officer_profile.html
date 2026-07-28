@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse - Officer Profile</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .navbar-officer {
+            background-color: #064e3b !important;
+        }
+        .navbar-officer .navbar-brand, 
+        .navbar-officer .nav-link {
+            color: #ecfdf5 !important;
+        }
+        .navbar-officer .nav-link:hover {
+            color: #ffffff !important;
+        }
+        .officer-badge {
+            background-color: #10b981;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+        .profile-avatar-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: #059669;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar (Officer Mode) -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-officer py-3">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/officer/dashboard}">
+                <span>🏛️ CivicPulse</span>
+                <span class="officer-badge">FIELD OFFICER</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/officer/dashboard}">Tasks Console</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link active" th:href="@{/officer/profile}">Officer Profile</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/faq}">FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light py-1 px-3" th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content py-5">
+        <div class="container" style="max-width: 800px;">
+            <div class="mb-5">
+                <h2 class="fw-bold text-dark mb-1">Field Officer Profile Sheet</h2>
+                <p class="text-muted mb-0">Review your assignments record, satisfaction ratings, and contact info.</p>
+            </div>
+
+            <!-- Profile Summary Card -->
+            <div class="card border rounded-4 shadow-sm p-4 bg-white mb-4">
+                <div class="row align-items-center text-center text-md-start">
+                    <div class="col-md-3 d-flex justify-content-center">
+                        <div class="profile-avatar-circle" th:text="${avatarChar}">F</div>
+                    </div>
+                    <div class="col-md-9 mt-3 mt-md-0">
+                        <h3 class="fw-extrabold text-dark mb-1" th:text="${username}">Officer Frank</h3>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle py-1.5 px-3 rounded-pill fw-bold mb-3 d-inline-block">
+                             👷 Field Team: Road Maintenance
+                        </span>
+                        <div class="row g-2 small text-muted">
+                            <div class="col-md-6">📧 Email: <span class="fw-bold text-dark" th:text="${email}">officer@civicpulse.gov</span></div>
+                            <div class="col-md-6">📞 Contact: <span class="fw-bold text-dark" th:text="${phone}">+1 555-0155</span></div>
+                            <div class="col-md-6">🏢 City: <span class="fw-bold text-dark" th:text="${city}">Metro City</span></div>
+                            <div class="col-md-6">📍 Base Station: <span class="fw-bold text-dark" th:text="${locality}">Municipal HQ</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Grid -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card border rounded-4 shadow-sm p-4 bg-white h-100">
+                        <h5 class="fw-bold text-dark mb-3">📈 Quality of Fixes</h5>
+                        <p class="small text-muted mb-4">
+                            Satisfaction ratings compiled from completed citizen reviews.
+                        </p>
+                        <div class="d-flex align-items-center gap-3">
+                            <h2 class="fw-extrabold text-success mb-0">5.0</h2>
+                            <div>
+                                <span class="text-warning fs-5">★★★★★</span>
+                                <span class="small text-muted d-block fw-bold">Average rating (3 feedback logs)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border rounded-4 shadow-sm p-4 bg-white h-100">
+                        <h5 class="fw-bold text-dark mb-3">🛠️ Resolution Performance</h5>
+                        <p class="small text-muted mb-4">
+                            Percentage of assigned tickets successfully closed within the SLA.
+                        </p>
+                        <div class="d-flex align-items-center justify-content-between mb-2 small fw-bold">
+                            <span class="text-muted">Target Resolution Timeline (48h)</span>
+                            <span class="text-success">100% Closed</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

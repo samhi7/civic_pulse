@@ -3,23 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CivicPulse - Empowering Communities</title>
+    <title>CivicPulse - Smart Civic Issue Reporting & Management</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Custom CSS variables -->
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #10b981;
+            --secondary-hover: #059669;
+            --dark-bg: #0f172a;
+            --light-bg: #f8fafc;
+            --font-family: 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: #ffffff;
+            color: #334155;
+            overflow-x: hidden;
+        }
+        .navbar-custom {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            color: var(--primary-color) !important;
+            letter-spacing: -0.5px;
+        }
+        .nav-link {
+            font-weight: 600;
+            color: #475569 !important;
+            transition: color 0.15s ease;
+        }
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #ffffff;
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary-custom:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+        .btn-secondary-custom {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary-custom:hover {
+            background-color: rgba(37, 99, 235, 0.05);
+            color: var(--primary-hover);
+        }
+        /* Hero Section */
+        .hero-section {
+            padding: 7rem 0 5rem;
+            background: linear-gradient(135deg, #f0fdf4 0%, #eff6ff 100%);
+            position: relative;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            color: var(--dark-bg);
+        }
+        .hero-highlight {
+            color: var(--primary-color);
+        }
+        /* Card styling */
+        .feature-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 2.25rem;
+            background: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        /* Stats */
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            font-weight: 600;
+            color: #64748b;
+        }
+        /* Timeline */
+        .step-num {
+            width: 40px;
+            height: 40px;
+            background-color: var(--secondary-color);
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        /* FAQ Accordion */
+        .accordion-button:not(.collapsed) {
+            background-color: rgba(37, 99, 235, 0.05);
+            color: var(--primary-color);
+        }
+        /* Footer */
+        footer {
+            background-color: var(--dark-bg);
+            color: #94a3b8;
+            padding: 4rem 0 2rem;
+        }
+        footer a {
+            color: #cbd5e1;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-custom py-3">
+    <!-- Header / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top py-3">
         <div class="container">
             <a class="navbar-brand" th:href="@{/}">
-                <span class="fs-4">🏛️ CivicPulse</span>
+                <span>🏛️ CivicPulse</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -27,97 +159,258 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-3">
-                        <a class="nav-link active" th:href="@{/}">Home</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
                     <li class="nav-item me-3">
-                        <a class="nav-link" th:href="@{/faq}">FAQ</a>
+                        <a class="nav-link" href="#features">Features</a>
                     </li>
                     <li class="nav-item me-3">
-                        <a class="nav-link" th:href="@{/login}">Login</a>
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="#faq">FAQ</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="btn btn-secondary-custom py-1.5 px-3" th:href="@{/login}">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="btn btn-primary-custom" th:href="@{/register}">Register</a>
+                        <a class="btn btn-primary-custom py-1.5 px-3" th:href="@{/register}">Register</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Hero Section -->
-        <header class="hero-section text-center text-lg-start">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6 mb-5 mb-lg-0">
-                        <span class="badge bg-indigo-100 text-primary mb-3 px-3 py-2 rounded-pill font-semibold">Community First Platform</span>
-                        <h1 class="hero-title mb-4">Empowering Citizens, Improving Neighborhoods.</h1>
-                        <p class="lead text-muted mb-5">CivicPulse bridges the gap between citizens and local government. Report community issues like potholes, streetlights, or waste, and monitor their resolution in real time.</p>
-                        <div class="d-flex flex-column flex-sm-row gap-3">
-                            <a th:href="@{/register}" class="btn btn-primary-custom btn-lg">Get Started</a>
-                            <a th:href="@{/login}" class="btn btn-secondary-custom btn-lg">Explore Dashboard</a>
-                        </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0 text-center text-lg-start">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold mb-3">
+                        🌟 Empowering Smart Cities
+                    </span>
+                    <h1 class="hero-title mb-4">
+                        Smart Civic Issue Reporting <span class="hero-highlight">Simplified</span>
+                    </h1>
+                    <p class="lead text-muted mb-4 fs-5">
+                        Report community maintenance issues, track real-time resolution pipelines, and connect directly with municipal staff to build a cleaner, safer city.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <a th:href="@{/register}" class="btn btn-primary-custom px-4 py-3">Report An Issue</a>
+                        <a href="#how-it-works" class="btn btn-secondary-custom px-4 py-3">How It Works</a>
                     </div>
-                    <div class="col-lg-6 text-center">
-                        <div class="p-5 bg-white rounded-5 shadow-sm border" style="max-width: 500px; margin: 0 auto;">
-                            <!-- Graphic Card -->
-                            <div class="mb-4 text-start">
-                                <span class="badge bg-warning text-dark mb-2">Active Issue</span>
-                                <h5 class="fw-bold mb-1">Broken Streetlight on Maple Ave</h5>
-                                <p class="text-muted small">Reported 2 hours ago by Sarah K.</p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="p-4 bg-white rounded-5 shadow border">
+                        <h4 class="fw-bold mb-3 text-dark">🔴 Live Smart Board</h4>
+                        <p class="text-muted small">Real-time status of civic operations in Metro City</p>
+                        <hr>
+                        <div class="row text-center py-2">
+                            <div class="col-4">
+                                <h3 class="fw-extrabold text-primary mb-1">1,248</h3>
+                                <p class="text-muted small fw-bold mb-0">Reported</p>
                             </div>
-                            <div class="progress mb-4" style="height: 10px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="col-4">
+                                <h3 class="fw-extrabold text-warning mb-1">142</h3>
+                                <p class="text-muted small fw-bold mb-0">Assigned</p>
                             </div>
-                            <div class="d-flex justify-content-between text-muted small">
-                                <span>Reported</span>
-                                <span class="fw-bold text-primary">In Progress</span>
-                                <span>Resolved</span>
+                            <div class="col-4">
+                                <h3 class="fw-extrabold text-success mb-1">1,106</h3>
+                                <p class="text-muted small fw-bold mb-0">Resolved</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </header>
+        </div>
+    </section>
 
-        <!-- Feature Cards -->
-        <section class="py-5">
-            <div class="container">
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold text-dark">How It Works</h2>
-                    <p class="text-muted">A simple 3-step process to keep your city in prime shape.</p>
+    <!-- About Section -->
+    <section id="about" class="py-5">
+        <div class="container py-4">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold text-dark mb-3">About CivicPulse</h2>
+                    <p class="text-muted">
+                        CivicPulse is an advanced, automated citizen-municipal engagement platform designed to bring transparency and efficiency to local governance. By streamlining the feedback pipeline, we bridge the gap between citizens, field officers, and administrators.
+                    </p>
+                    <p class="text-muted">
+                        Whether it is road maintenance, broken streetlights, or waste management anomalies, CivicPulse maps, logs, allocates resources, and tracks resolution timelines in real-time.
+                    </p>
                 </div>
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card-custom text-center h-100">
-                            <div class="stat-icon">📝</div>
-                            <h4 class="fw-bold mt-2">Report</h4>
-                            <p class="text-muted">File a complaint detailing the issue and add local coordinates or images if needed.</p>
-                        </div>
+                <div class="col-lg-6 text-center">
+                    <span class="fs-1">🏢 🤝 💻</span>
+                    <h4 class="fw-bold mt-3 text-dark">Transparency & Collaboration</h4>
+                    <p class="text-muted">Connecting people with public officials instantly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-dark">Smart Platform Features</h2>
+                <p class="text-muted">High-performance tools built for community development</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card text-center">
+                        <span class="fs-1">📍</span>
+                        <h4 class="fw-bold mt-3 text-dark">GPS Mapping</h4>
+                        <p class="text-muted mb-0">Pinpoint issue coordinates dynamically on an interactive city map for accurate municipal inspection.</p>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card-custom text-center h-100">
-                            <div class="stat-icon">⚙️</div>
-                            <h4 class="fw-bold mt-2">Track</h4>
-                            <p class="text-muted">Stay notified as municipal authorities verify and allocate agents to resolve the complaint.</p>
-                        </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card text-center">
+                        <span class="fs-1">⚡</span>
+                        <h4 class="fw-bold mt-3 text-dark">Instant Assignments</h4>
+                        <p class="text-muted mb-0">Automatic ticket routing to corresponding departments and field officers for speedy resolution.</p>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card-custom text-center h-100">
-                            <div class="stat-icon">✅</div>
-                            <h4 class="fw-bold mt-2">Resolve</h4>
-                            <p class="text-muted">View final confirmation, updates, and feedback loops as tasks are successfully completed.</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card text-center">
+                        <span class="fs-1">📊</span>
+                        <h4 class="fw-bold mt-3 text-dark">Detailed Metrics</h4>
+                        <p class="text-muted mb-0">Complete transparency with resolution timelines, admin remarks, and progress photos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how-it-works" class="py-5">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-dark">How It Works</h2>
+                <p class="text-muted">Four simple steps to improve your neighborhood</p>
+            </div>
+            <div class="row text-center g-4">
+                <div class="col-md-3">
+                    <div class="step-num">1</div>
+                    <h5 class="fw-bold text-dark">File Issue</h5>
+                    <p class="text-muted small">Report an issue using our 5-step wizard upload helper.</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-num">2</div>
+                    <h5 class="fw-bold text-dark">Verify & Assign</h5>
+                    <p class="text-muted small">Administrators verify and assign the ticket to field officers.</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-num">3</div>
+                    <h5 class="fw-bold text-dark">Field Action</h5>
+                    <p class="text-muted small">Field crews execute fixes and upload 'after' evidence photos.</p>
+                </div>
+                <div class="col-md-3">
+                    <div class="step-num">4</div>
+                    <h5 class="fw-bold text-dark">Give Rating</h5>
+                    <p class="text-muted small">Review the work, provide feedback, and rate resolution speed.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section id="faq" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-dark">Frequently Asked Questions</h2>
+                <p class="text-muted">Find quick answers to common queries</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="landingFaq">
+                        <div class="accordion-item border-0 shadow-sm rounded mb-3 overflow-hidden">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#q1">
+                                    How long does it take to resolve a reported issue?
+                                </button>
+                            </h2>
+                            <div id="q1" class="accordion-collapse collapse show" data-bs-parent="#landingFaq">
+                                <div class="accordion-body bg-white text-muted">
+                                    Resolution time depends on priority and category. Streetlight fixes typically take 24–48 hours, while major road works may require scheduling.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item border-0 shadow-sm rounded mb-3 overflow-hidden">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#q2">
+                                    Can I vote on complaints submitted by other users?
+                                </button>
+                            </h2>
+                            <div id="q2" class="accordion-collapse collapse" data-bs-parent="#landingFaq">
+                                <div class="accordion-body bg-white text-muted">
+                                    Yes! The Community Board tab allows citizens to upvote existing issues to indicate that they also support the resolution.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section id="contact" class="py-5">
+        <div class="container py-4">
+            <div class="row justify-content-center text-center mb-5">
+                <div class="col-lg-6">
+                    <h2 class="fw-bold text-dark">Get In Touch</h2>
+                    <p class="text-muted">Contact our support center or technical operations department</p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="p-4 bg-white rounded-4 shadow border">
+                        <form th:action="@{/contact}" method="POST" onsubmit="alert('Message sent successfully! Our team will contact you shortly.'); return false;">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Full Name</label>
+                                <input type="text" class="form-control" placeholder="Jane Doe" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Email Address</label>
+                                <input type="email" class="form-control" placeholder="jane@example.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Message</label>
+                                <textarea class="form-control" rows="4" placeholder="How can we help you?" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary-custom w-100 py-2">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="text-center">
+    <footer>
         <div class="container">
-            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved. Empowering voices for a cleaner, safer tomorrow.</p>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <h5 class="fw-bold text-white mb-3">🏛️ CivicPulse</h5>
+                    <p class="small text-muted">Smart civic technological infrastructure for clean, safe, and progressive urban environments.</p>
+                </div>
+                <div class="col-lg-4 ms-auto">
+                    <h6 class="fw-bold text-white mb-3">Quick Navigation</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#about">About CivicPulse</a></li>
+                        <li class="mb-2"><a href="#features">Platform Features</a></li>
+                        <li class="mb-2"><a href="#how-it-works">How It Works</a></li>
+                        <li class="mb-2"><a th:href="@{/login}">Citizen Dashboard Login</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <p class="small mb-0">&copy; 2026 CivicPulse. All rights reserved.</p>
+                <p class="small mb-0">Designed for Smart Municipalities.</p>
+            </div>
         </div>
     </footer>
 

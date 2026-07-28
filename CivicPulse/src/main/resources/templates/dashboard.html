@@ -60,6 +60,12 @@
                         <a class="nav-link active" th:href="@{/dashboard}">Dashboard</a>
                     </li>
                     <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/explore}">Explore</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/map}">City Map</a>
+                    </li>
+                    <li class="nav-item me-3">
                         <a class="nav-link" th:href="@{/profile}">Profile</a>
                     </li>
                     <li class="nav-item me-3">
@@ -228,10 +234,11 @@
                                         <td class="complaint-category" th:text="${complaint.category}">Pothole Repair</td>
                                         <td class="complaint-department" th:text="${complaint.department}">Road Maintenance</td>
                                         <td>
-                                            <!-- Conditional Badges -->
-                                            <span th:if="${complaint.status == 'Pending'}" class="badge-pending complaint-status">Pending</span>
-                                            <span th:if="${complaint.status == 'In Progress'}" class="badge-in-progress complaint-status">In Progress</span>
-                                            <span th:if="${complaint.status == 'Resolved'}" class="badge-resolved complaint-status">Resolved</span>
+                                            <!-- Dynamic Badges -->
+                                            <span class="badge complaint-status" 
+                                                  th:classappend="${complaint.status == 'Completed' or complaint.status == 'Resolved'} ? 'bg-success text-white' : 
+                                                                  (${complaint.status == 'Pending' or complaint.status == 'Verified'} ? 'bg-warning text-dark' : 'bg-primary text-white')"
+                                                  th:text="${complaint.status}">Pending</span>
                                         </td>
                                         <td th:text="${#strings.isEmpty(complaint.adminRemarks) ? 'No remarks yet' : complaint.adminRemarks}">No remarks yet</td>
                                     </tr>
@@ -324,10 +331,11 @@
                                         <td class="complaint-category" th:text="${comp.category}">Streetlight Malfunction</td>
                                         <td class="complaint-department" th:text="${comp.department}">Electricity Board</td>
                                         <td>
-                                            <!-- Conditional Badges -->
-                                            <span th:if="${comp.status == 'Pending'}" class="badge-pending complaint-status">Pending</span>
-                                            <span th:if="${comp.status == 'In Progress'}" class="badge-in-progress complaint-status">In Progress</span>
-                                            <span th:if="${comp.status == 'Resolved'}" class="badge-resolved complaint-status">Resolved</span>
+                                            <!-- Dynamic Badges -->
+                                            <span class="badge complaint-status" 
+                                                  th:classappend="${comp.status == 'Completed' or comp.status == 'Resolved'} ? 'bg-success text-white' : 
+                                                                  (${comp.status == 'Pending' or comp.status == 'Verified'} ? 'bg-warning text-dark' : 'bg-primary text-white')"
+                                                  th:text="${comp.status}">Pending</span>
                                         </td>
                                         <td class="text-center">
                                             <!-- Already Supported -->

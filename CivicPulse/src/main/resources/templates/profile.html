@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CivicPulse - User Profile</title>
+    <title>CivicPulse - Profile Sheet</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,25 +13,45 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        .profile-header {
-            background: linear-gradient(135deg, #e0e7ff 0%, #ccfbf1 100%);
-            padding: 4rem 0;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        .avatar-circle {
-            width: 100px;
-            height: 100px;
+        .profile-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             background-color: var(--primary-color);
             color: white;
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: 2.25rem;
+            font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+            margin: 0 auto 1rem;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+        .nav-tabs-profile {
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .nav-tabs-profile .nav-link {
+            border: none;
+            color: #64748b;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            transition: all 0.2s ease;
+        }
+        .nav-tabs-profile .nav-link:hover {
+            color: var(--primary-color);
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .nav-tabs-profile .nav-link.active {
+            color: var(--primary-color) !important;
+            border-bottom: 2px solid var(--primary-color) !important;
+            background: transparent;
+        }
+        .badge-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            background-color: #ffffff;
+            text-align: center;
         }
     </style>
 </head>
@@ -41,7 +61,7 @@
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom py-3">
         <div class="container">
             <a class="navbar-brand" th:href="@{/dashboard}">
-                <span class="fs-4">🏛️ CivicPulse</span>
+                <span>🏛️ CivicPulse</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -50,6 +70,12 @@
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-3" th:if="${role == 'USER'}">
                         <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item me-3" th:if="${role == 'USER'}">
+                        <a class="nav-link" th:href="@{/explore}">Explore</a>
+                    </li>
+                    <li class="nav-item me-3" th:if="${role == 'USER'}">
+                        <a class="nav-link" th:href="@{/map}">City Map</a>
                     </li>
                     <li class="nav-item me-3" th:if="${role == 'ADMIN'}">
                         <a class="nav-link" th:href="@{/admin/dashboard}">Resolution Console</a>
@@ -69,81 +95,111 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        <div class="profile-header">
-            <div class="container">
-                <div class="avatar-circle" th:text="${#strings.substring(username, 0, 1)}">U</div>
-                <h2 class="fw-bold text-dark mb-1" th:text="${username}">User Full Name</h2>
-                <span th:text="${role}" class="badge bg-indigo-100 text-primary px-3 py-2 rounded-pill font-semibold">USER</span>
-                <p class="text-muted mt-2 mb-0" th:text="${email}">user@example.com</p>
-            </div>
-        </div>
-
-        <!-- Details -->
-        <div class="container py-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    
-                    <!-- Stats Grid for USER -->
-                    <div class="row g-4 mb-5" th:if="${role == 'USER'}">
-                        <div class="col-md-4">
-                            <div class="stat-card text-center">
-                                <h6 class="text-uppercase text-muted fw-bold mb-1 small">Total Reported</h6>
-                                <h3 class="fw-extrabold text-dark mb-0" th:text="${totalComplaints}">0</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stat-card text-center">
-                                <h6 class="text-uppercase text-muted fw-bold mb-1 small">Pending Resolution</h6>
-                                <h3 class="fw-extrabold text-dark mb-0" th:text="${pendingComplaints}">0</h3>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="stat-card text-center">
-                                <h6 class="text-uppercase text-muted fw-bold mb-1 small">Resolved Tasks</h6>
-                                <h3 class="fw-extrabold text-dark mb-0" th:text="${resolvedComplaints}">0</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Details Card -->
-                    <div class="card-custom border shadow-sm">
-                        <h4 class="fw-bold text-dark mb-4">Account Information</h4>
-                        
-                        <div class="row g-3">
-                            <div class="col-sm-6">
-                                <label class="form-label text-muted small fw-bold">Full Name</label>
-                                <div class="p-2 bg-light border rounded text-dark fw-medium" th:text="${username}">Jane Doe</div>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label text-muted small fw-bold">Email Address</label>
-                                <div class="p-2 bg-light border rounded text-dark fw-medium" th:text="${email}">citizen@example.com</div>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label text-muted small fw-bold">Account Role</label>
-                                <div class="p-2 bg-light border rounded text-dark fw-medium" th:text="${role}">USER</div>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label text-muted small fw-bold">Account Status</label>
-                                <div class="p-2 bg-light border rounded text-success fw-medium">✔️ Active In-Memory</div>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info mt-4 mb-0" role="alert">
-                            ℹ️ CivicPulse runs in-memory. Profile configurations, newly registered accounts, and reports will reset when the Spring Boot server is restarted.
-                        </div>
-                    </div>
-
+    <div class="main-content py-5">
+        <div class="container" style="max-width: 800px;">
+            <!-- Profile Header -->
+            <div class="card border rounded-4 shadow-sm p-4 bg-white mb-5 text-center text-sm-start d-sm-flex align-items-center flex-sm-row gap-4">
+                <div class="profile-avatar-large" th:text="${avatarChar}">J</div>
+                <div>
+                    <h3 class="fw-extrabold text-dark mb-1" th:text="${username}">Jane Doe</h3>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle py-1.5 px-3 rounded-pill fw-bold mb-2 d-inline-block" th:text="${role == 'ADMIN' ? 'System Administrator' : 'Citizen Partner'}">Citizen Partner</span>
+                    <p class="small text-muted mb-0">📧 Registered: <span class="fw-bold" th:text="${email}">jane@example.com</span></p>
                 </div>
             </div>
+
+            <!-- Profile Tabs -->
+            <ul class="nav nav-tabs-profile mb-4" id="profileTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                        👤 Overview
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="achievements-tab" data-bs-toggle="tab" data-bs-target="#achievements" type="button" role="tab" aria-controls="achievements" aria-selected="false">
+                        🏆 Achievements
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="settings-link-tab" type="button" onclick="window.location.href='/settings';">
+                        ⚙️ Settings
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="profileTabsContent">
+                <!-- Tab 1: Overview -->
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <div class="card border rounded-4 shadow-sm p-4 bg-white mb-4">
+                        <h5 class="fw-bold text-dark mb-3">📍 Address & Jurisdictions</h5>
+                        <div class="row g-3 small">
+                            <div class="col-sm-6">
+                                <span class="text-muted fw-bold d-block">MUNICIPAL JURISDICTION:</span>
+                                <span class="fw-bold text-dark" th:text="${city != null ? city : 'Metro City'}">Metro City</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted fw-bold d-block">LOCALITY NEIGHBORHOOD:</span>
+                                <span class="fw-bold text-dark" th:text="${locality != null ? locality : 'Downtown'}">Downtown</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted fw-bold d-block">VERIFIED PHONE:</span>
+                                <span class="fw-bold text-dark" th:text="${phone != null ? phone : 'Not Verified'}">+1 555-0199</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics grid (Only for regular citizens) -->
+                    <div class="row g-4" th:if="${role == 'USER'}">
+                        <div class="col-4">
+                            <div class="card border rounded-4 shadow-sm p-3 bg-white text-center">
+                                <h6 class="text-muted small fw-bold mb-1">Filed Reports</h6>
+                                <h3 class="fw-extrabold text-primary mb-0" th:text="${totalComplaints}">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card border rounded-4 shadow-sm p-3 bg-white text-center">
+                                <h6 class="text-muted small fw-bold mb-1">Awaiting Fix</h6>
+                                <h3 class="fw-extrabold text-warning mb-0" th:text="${pendingComplaints}">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="card border rounded-4 shadow-sm p-3 bg-white text-center">
+                                <h6 class="text-muted small fw-bold mb-1">Resolved Fixes</h6>
+                                <h3 class="fw-extrabold text-success mb-0" th:text="${resolvedComplaints}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Achievements -->
+                <div class="tab-pane fade" id="achievements" role="tabpanel" aria-labelledby="achievements-tab">
+                    <h5 class="fw-bold text-dark mb-4">🏆 Civic Badges & Accomplishments</h5>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="badge-box">
+                                <span class="fs-1 d-block mb-2">🌱</span>
+                                <h6 class="fw-bold text-dark mb-1">Neighborhood Guardian</h6>
+                                <p class="small text-muted mb-0">Awarded for filing your first verified neighborhood issue.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="badge-box">
+                                <span class="fs-1 d-block mb-2">🤝</span>
+                                <h6 class="fw-bold text-dark mb-1">Community Partner</h6>
+                                <p class="small text-muted mb-0">Awarded for upvoting or supporting another citizen's grievance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <!-- Footer -->
     <footer class="text-center mt-auto">
         <div class="container">
-            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved. Empowering voices for a cleaner, safer tomorrow.</p>
+            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved.</p>
         </div>
     </footer>
 

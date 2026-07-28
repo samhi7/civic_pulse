@@ -29,6 +29,12 @@
                     <li class="nav-item me-3" th:if="${role == 'USER'}">
                         <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
                     </li>
+                    <li class="nav-item me-3" th:if="${role == 'USER'}">
+                        <a class="nav-link" th:href="@{/explore}">Explore</a>
+                    </li>
+                    <li class="nav-item me-3" th:if="${role == 'USER'}">
+                        <a class="nav-link" th:href="@{/map}">City Map</a>
+                    </li>
                     <li class="nav-item me-3" th:if="${role == 'ADMIN'}">
                         <a class="nav-link" th:href="@{/admin/dashboard}">Resolution Console</a>
                     </li>

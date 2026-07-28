@@ -11,6 +11,7 @@ import java.util.List;
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
     List<Complaint> findByUserOrderByIdDesc(User user);
     List<Complaint> findAllByOrderByIdDesc();
+    List<Complaint> findByAssignedOfficerOrderByIdDesc(User officer);
     long countByUser(User user);
     long countByUserAndStatus(User user, String status);
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CivicPulse - Admin Dashboard</title>
+    <title>CivicPulse - Admin Operations Analytics</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,14 +13,10 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
-        /* Admin-specific modifications: Slate navbar theme */
         .navbar-admin {
             background-color: var(--dark-bg) !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .navbar-admin .navbar-brand {
-            color: #f8fafc !important;
-        }
+        .navbar-admin .navbar-brand, 
         .navbar-admin .nav-link {
             color: #cbd5e1 !important;
         }
@@ -37,14 +33,6 @@
             vertical-align: middle;
             margin-left: 0.5rem;
         }
-        /* Filter Panel Styling */
-        .filter-panel {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
     </style>
 </head>
 <body>
@@ -53,7 +41,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark navbar-admin py-3">
         <div class="container">
             <a class="navbar-brand" th:href="@{/admin/dashboard}">
-                <span class="fs-4">🏛️ CivicPulse</span>
+                <span>🏛️ CivicPulse</span>
                 <span class="admin-badge">ADMIN</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,13 +50,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-3">
-                        <a class="nav-link active" th:href="@{/admin/dashboard}">Resolution Console</a>
+                        <a class="nav-link active" th:href="@{/admin/dashboard}">Analytics</a>
                     </li>
                     <li class="nav-item me-3">
-                        <a class="nav-link" th:href="@{/profile}">Profile</a>
+                        <a class="nav-link" th:href="@{/admin/complaints}">Complaints Registry</a>
                     </li>
                     <li class="nav-item me-3">
-                        <a class="nav-link" th:href="@{/faq}">FAQ & Help</a>
+                        <a class="nav-link" th:href="@{/admin/departments}">Departments</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/admin/users}">Users</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/admin/logs}">Audit Logs</a>
                     </li>
                     <li class="nav-item">
                         <a class="btn btn-outline-light py-1 px-3" th:href="@{/logout}">Logout</a>
@@ -84,10 +78,8 @@
             <!-- Header Section -->
             <div class="row align-items-center mb-5">
                 <div class="col-md-8">
-                    <h2 class="fw-bold text-dark mb-1">
-                        Welcome, <span th:text="${username}">Administrator</span>!
-                    </h2>
-                    <p class="text-muted mb-0">Municipal Resolution Console. Overview of all civic issues reported across the community.</p>
+                    <h2 class="fw-bold text-dark mb-1">Municipal Analytics Panel</h2>
+                    <p class="text-muted mb-0">Overview of operational workloads, department task ratios, and field crew output.</p>
                 </div>
             </div>
 
@@ -131,101 +123,26 @@
                 </div>
             </div>
 
-            <!-- Interactive Filter Panel (Admin Control) -->
-            <div class="filter-panel">
-                <div class="row g-3 align-items-end">
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Search Title / Area / Reporter</label>
-                        <input type="text" id="adminSearch" class="form-control form-control-sm" placeholder="Type to filter..." oninput="filterRegistry()">
+            <!-- Analytics Charts Grid -->
+            <div class="row g-4">
+                <!-- Chart 1: Workload Category Split -->
+                <div class="col-md-6">
+                    <div class="card border rounded-4 shadow-sm p-4 bg-white">
+                        <h5 class="fw-bold text-dark mb-3">📦 Category Workload Split</h5>
+                        <div style="height: 300px;">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Problem Category</label>
-                        <select id="adminCategory" class="form-select form-select-sm" onchange="filterRegistry()">
-                            <option value="ALL">All Categories</option>
-                            <option value="Pothole / Road Repair">Pothole / Road Repair</option>
-                            <option value="Streetlight Malfunction">Streetlight Malfunction</option>
-                            <option value="Garbage Collection">Garbage Collection</option>
-                            <option value="Water Leakage">Water Leakage</option>
-                            <option value="Illegal Parking">Illegal Parking</option>
-                            <option value="Others">Others</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Assigned Department</label>
-                        <select id="adminDept" class="form-select form-select-sm" onchange="filterRegistry()">
-                            <option value="ALL">All Departments</option>
-                            <option value="Unassigned">Unassigned</option>
-                            <option value="Road Maintenance Department">Road Maintenance Department</option>
-                            <option value="Electricity Board">Electricity Board</option>
-                            <option value="Waste Management">Waste Management</option>
-                            <option value="Water Supply Department">Water Supply Department</option>
-                            <option value="Traffic Control">Traffic Control</option>
-                            <option value="Others">Others</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label small fw-bold">Status</label>
-                        <select id="adminStatus" class="form-select form-select-sm" onchange="filterRegistry()">
-                            <option value="ALL">All Statuses</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Resolved">Resolved</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Complaints Control Table -->
-            <div class="card-custom border shadow-sm">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-dark mb-0">Municipal Registry</h4>
-                    <span class="badge bg-danger text-white border py-2 px-3">Live Console</span>
                 </div>
                 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="adminRegistryTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th scope="col" class="py-3">Complaint ID</th>
-                                <th scope="col" class="py-3">Reporter</th>
-                                <th scope="col" class="py-3">Title</th>
-                                <th scope="col" class="py-3">Location</th>
-                                <th scope="col" class="py-3">Category</th>
-                                <th scope="col" class="py-3">Department</th>
-                                <th scope="col" class="py-3 text-center">Supports</th>
-                                <th scope="col" class="py-3">Status</th>
-                                <th scope="col" class="py-3 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="complaint : ${complaints}" class="registry-row">
-                                <td class="fw-bold text-dark py-3 complaint-id" th:text="${complaint.complaintId}">CP-1001</td>
-                                <td class="complaint-reporter" th:text="${complaint.user.fullName}">Jane Doe</td>
-                                <td class="complaint-title" th:text="${complaint.title}">Broken pipe</td>
-                                <td class="complaint-location" th:text="${complaint.location}">Maple St</td>
-                                <td class="complaint-category" th:text="${complaint.category}">Water Leakage</td>
-                                <td class="complaint-department" th:text="${complaint.department}">Road Maintenance</td>
-                                <td class="text-center" th:text="${complaint.supportCount}">0</td>
-                                <td>
-                                    <!-- Conditional Badges -->
-                                    <span th:if="${complaint.status == 'Pending'}" class="badge-pending complaint-status">Pending</span>
-                                    <span th:if="${complaint.status == 'In Progress'}" class="badge-in-progress complaint-status">In Progress</span>
-                                    <span th:if="${complaint.status == 'Resolved'}" class="badge-resolved complaint-status">Resolved</span>
-                                </td>
-                                <td class="text-center">
-                                    <a th:href="@{/admin/update/{id}(id=${complaint.id})}" 
-                                       class="btn btn-sm btn-primary-custom py-1 px-3 fs-7">
-                                        Manage
-                                    </a>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(complaints)}">
-                                <td colspan="9" class="text-center py-4 text-muted">
-                                    No complaints registered in the system yet.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Chart 2: Monthly Resolution Rate -->
+                <div class="col-md-6">
+                    <div class="card border rounded-4 shadow-sm p-4 bg-white">
+                        <h5 class="fw-bold text-dark mb-3">📈 Resolution Timeline Trends</h5>
+                        <div style="height: 300px;">
+                            <canvas id="resolutionChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -234,43 +151,75 @@
     <!-- Footer -->
     <footer class="text-center mt-auto">
         <div class="container">
-            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved. Administrator Console.</p>
+            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved.</p>
         </div>
     </footer>
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Client-side Filtering Script -->
+    <!-- Chart Configuration Script -->
     <script>
-        function filterRegistry() {
-            const query = document.getElementById("adminSearch").value.toLowerCase();
-            const category = document.getElementById("adminCategory").value;
-            const department = document.getElementById("adminDept").value;
-            const status = document.getElementById("adminStatus").value;
-
-            const rows = document.querySelectorAll(".registry-row");
-
-            rows.forEach(row => {
-                const reporter = row.querySelector(".complaint-reporter").textContent.toLowerCase();
-                const title = row.querySelector(".complaint-title").textContent.toLowerCase();
-                const location = row.querySelector(".complaint-location").textContent.toLowerCase();
-                const cat = row.querySelector(".complaint-category").textContent;
-                const dept = row.querySelector(".complaint-department").textContent;
-                const stat = row.querySelector(".complaint-status").textContent;
-
-                const matchesQuery = reporter.includes(query) || title.includes(query) || location.includes(query);
-                const matchesCategory = category === "ALL" || cat === category;
-                const matchesDept = department === "ALL" || dept === department;
-                const matchesStatus = status === "ALL" || stat === status;
-
-                if (matchesQuery && matchesCategory && matchesDept && matchesStatus) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
+        // Category Split Chart (Pie)
+        const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+        new Chart(ctxCategory, {
+            type: 'doughnut',
+            data: {
+                labels: ['Road Damage', 'Street Light', 'Garbage', 'Water Leakage', 'Drainage', 'Others'],
+                datasets: [{
+                    data: [12, 19, 8, 15, 6, 4],
+                    backgroundColor: [
+                        '#3b82f6', // blue
+                        '#f59e0b', // amber
+                        '#10b981', // emerald
+                        '#06b6d4', // cyan
+                        '#8b5cf6', // purple
+                        '#64748b'  // slate
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
                 }
-            });
-        }
+            }
+        });
+
+        // Resolution Trends Chart (Line)
+        const ctxResolution = document.getElementById('resolutionChart').getContext('2d');
+        new Chart(ctxResolution, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Resolution Rate (%)',
+                    data: [82, 85, 88, 91, 89, 93, 95],
+                    fill: true,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                    tension: 0.3,
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 70,
+                        max: 100
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

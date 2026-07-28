@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse - Report Issue Wizard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .wizard-step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin-bottom: 2.5rem;
+        }
+        .wizard-step-header::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e2e8f0;
+            z-index: 1;
+        }
+        .wizard-node {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 3px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #64748b;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        .wizard-node.active {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        }
+        .wizard-node.completed {
+            border-color: var(--secondary-color);
+            background-color: var(--secondary-color);
+            color: #ffffff;
+        }
+        .category-select-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        .category-select-card:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        .category-select-card.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.03);
+        }
+        .wizard-step-panel {
+            display: none;
+        }
+        .wizard-step-panel.active {
+            display: block;
+        }
+        /* Evidence Uploader Elements */
+        .dropzone-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            background-color: #f8fafc;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .dropzone-area:hover, .dropzone-area.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.02);
+        }
+        .thumb-preview-box {
+            position: relative;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px;
+            background-color: #ffffff;
+        }
+        .thumb-img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .thumb-video-icon {
+            width: 100%;
+            height: 100px;
+            background-color: #f1f5f9;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+        .btn-thumb-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/dashboard}">
+                <span>🏛️ CivicPulse</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/explore}">Explore</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/map}">City Map</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/profile}">Profile</a>
+                    </li>
+                    <li class="nav-item me-3">
+                        <a class="nav-link" th:href="@{/faq}">FAQ & Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-secondary-custom py-1 px-3" th:href="@{/logout}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content py-5">
+        <div class="container" style="max-width: 720px;">
+            <div class="card border rounded-4 shadow-sm p-4 p-md-5 bg-white">
+                <h3 class="fw-extrabold text-dark mb-4 text-center">Report A Civic Issue</h3>
+
+                <!-- Step Tracker Header -->
+                <div class="wizard-step-header">
+                    <div class="wizard-node active" id="node-1">1</div>
+                    <div class="wizard-node" id="node-2">2</div>
+                    <div class="wizard-node" id="node-3">3</div>
+                    <div class="wizard-node" id="node-4">4</div>
+                    <div class="wizard-node" id="node-5">5</div>
+                </div>
+
+                <!-- Form Start -->
+                <form th:action="@{/report}" method="POST" id="wizardForm" enctype="multipart/form-data">
+                    <!-- Hidden Real File Inputs for Spring Boot Multipart Parsing -->
+                    <input type="file" name="imageFiles" id="imageFilesInput" multiple accept="image/png, image/jpeg, image/jpg" class="d-none">
+                    <input type="file" name="videoFile" id="videoFileInput" accept="video/mp4, video/quicktime, video/x-msvideo" class="d-none">
+
+                    <!-- Step 1: Choose Category -->
+                    <div class="wizard-step-panel active" id="panel-1">
+                        <h5 class="fw-bold text-dark mb-3">Step 1: Select Issue Category</h5>
+                        <input type="hidden" name="category" id="issueCategory" required>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-4">
+                                <div class="category-select-card" data-value="Road Damage" onclick="setCategory(this)">
+                                    <span class="fs-2">🛣️</span>
+                                    <span class="small fw-bold d-block mt-2">Road Damage</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="category-select-card" data-value="Street Light" onclick="setCategory(this)">
+                                    <span class="fs-2">💡</span>
+                                    <span class="small fw-bold d-block mt-2">Street Light</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="category-select-card" data-value="Garbage" onclick="setCategory(this)">
+                                    <span class="fs-2">🗑️</span>
+                                    <span class="small fw-bold d-block mt-2">Garbage</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="category-select-card" data-value="Water Leakage" onclick="setCategory(this)">
+                                    <span class="fs-2">💧</span>
+                                    <span class="small fw-bold d-block mt-2">Water Leakage</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="category-select-card" data-value="Drainage" onclick="setCategory(this)">
+                                    <span class="fs-2">🪠</span>
+                                    <span class="small fw-bold d-block mt-2">Drainage</span>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="category-select-card" data-value="Others" onclick="setCategory(this)">
+                                    <span class="fs-2">🛠️</span>
+                                    <span class="small fw-bold d-block mt-2">Others</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Issue Details -->
+                    <div class="wizard-step-panel" id="panel-2">
+                        <h5 class="fw-bold text-dark mb-3">Step 2: Issue Specifications</h5>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Short Title</label>
+                            <input type="text" name="title" id="issueTitle" class="form-control" placeholder="e.g. Broken streetlight lens bulb" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Detailed Description</label>
+                            <textarea name="description" id="issueDesc" class="form-control" rows="4" placeholder="Describe the defect details..." required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Location -->
+                    <div class="wizard-step-panel" id="panel-3">
+                        <h5 class="fw-bold text-dark mb-3">Step 3: Pinpoint Location</h5>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Street Address</label>
+                            <input type="text" name="location" id="issueLoc" class="form-control" placeholder="e.g. 15 Baker Street" required>
+                        </div>
+                        <div class="p-3 bg-light rounded-3 text-center border mb-3">
+                            <p class="small text-muted mb-2">📍 Simulate GPS Coordinates Mapping</p>
+                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="simulateGps()">
+                                Fetch GPS Coordinates
+                            </button>
+                            <div class="mt-2 small text-success fw-bold d-none" id="gpsStatus">
+                                Coordinates Captured: <span id="gpsCoords"></span>
+                            </div>
+                        </div>
+                        <!-- Hidden coordinates inputs -->
+                        <input type="hidden" name="latitude" id="latInput">
+                        <input type="hidden" name="longitude" id="lngInput">
+                    </div>
+
+                    <!-- Step 4: Evidence Upload (Enhanced) -->
+                    <div class="wizard-step-panel" id="panel-4">
+                        <h5 class="fw-bold text-dark mb-1">Step 4: Attach Verification Evidence</h5>
+                        <p class="small text-muted mb-3">Adding photos or videos helps municipal officers verify and resolve your complaint faster.</p>
+
+                        <!-- Drag and Drop Zone -->
+                        <div class="dropzone-area mb-4" id="dropZone" onclick="triggerFileSelector()">
+                            <span class="fs-1 d-block mb-2">☁️</span>
+                            <h6 class="fw-bold text-dark mb-1">Drag and drop files here or click to browse</h6>
+                            <p class="small text-muted mb-0">Supports up to 5 images (JPG, PNG) and 1 video (MP4, MOV, up to 100MB)</p>
+                        </div>
+
+                        <!-- Mobile camera tools -->
+                        <div class="d-flex justify-content-center gap-3 mb-4">
+                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold" id="cameraBtn" onclick="startCamera()">📷 Capture Photo</button>
+                            <button type="button" class="btn btn-sm btn-outline-primary fw-bold" id="videoRecordBtn" onclick="startVideoRecording()">🎥 Record Video</button>
+                        </div>
+
+                        <!-- Camera Preview Block -->
+                        <div id="cameraBlock" class="d-none text-center bg-dark p-3 rounded-4 mb-4 position-relative">
+                            <video id="webcam" autoplay playsinline class="w-100 rounded-3 mb-3" style="max-height: 280px; object-fit: cover;"></video>
+                            <canvas id="photoCanvas" class="d-none"></canvas>
+                            <div class="d-flex justify-content-center gap-2">
+                                <button type="button" class="btn btn-sm btn-light fw-bold" id="captureBtn" onclick="takeSnapshot()">Capture Snapshot</button>
+                                <button type="button" class="btn btn-sm btn-danger fw-bold d-none" id="stopRecordBtn" onclick="stopVideoRecording()">Stop Recording</button>
+                                <button type="button" class="btn btn-sm btn-secondary fw-bold" onclick="closeCamera()">Close Camera</button>
+                            </div>
+                        </div>
+
+                        <!-- Staged Files Preview Grid -->
+                        <div class="row g-3 mb-4" id="thumbnailsGrid"></div>
+
+                        <!-- Upload Progress Bar (Simulated on submit) -->
+                        <div id="uploadProgressContainer" class="d-none">
+                            <div class="d-flex justify-content-between mb-1 small fw-bold text-muted">
+                                <span>Uploading attachments...</span>
+                                <span id="progressText">0%</span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="uploadProgressBar" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Review & Preview -->
+                    <div class="wizard-step-panel" id="panel-5">
+                        <h5 class="fw-bold text-dark mb-3">Step 5: Review & Submit</h5>
+                        <div class="bg-light p-4 rounded-4 border mb-4">
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold small text-muted">Category:</div>
+                                <div class="col-8 text-dark small fw-bold" id="previewCat">None</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold small text-muted">Title:</div>
+                                <div class="col-8 text-dark small fw-bold" id="previewTitle">None</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold small text-muted">Location:</div>
+                                <div class="col-8 text-dark small fw-bold" id="previewLoc">None</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold small text-muted">GPS Coords:</div>
+                                <div class="col-8 text-dark small fw-bold" id="previewGps">Not provided</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-4 fw-bold small text-muted">Evidence Files:</div>
+                                <div class="col-8 text-dark small" id="previewFiles">None staged</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4 fw-bold small text-muted">Description:</div>
+                                <div class="col-8 text-dark small" id="previewDesc">None</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wizard Navigation Buttons -->
+                    <div class="d-flex justify-content-between mt-5 pt-3 border-top">
+                        <button type="button" class="btn btn-secondary-custom py-2 px-4 d-none" id="prevBtn" onclick="prevStep()">
+                            Previous
+                        </button>
+                        <button type="button" class="btn btn-primary-custom py-2 px-4 ms-auto" id="nextBtn" onclick="nextStep()">
+                            Continue
+                        </button>
+                        <button type="button" class="btn btn-success py-2 px-4 d-none" id="submitBtn" onclick="handleSubmit()">
+                            Submit Issue
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-auto">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 CivicPulse. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        // Evidence Staging arrays
+        let stagedImages = [];
+        let stagedVideo = null;
+        let webcamStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        function setCategory(card) {
+            document.querySelectorAll('.category-select-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            const val = card.getAttribute('data-value');
+            document.getElementById('issueCategory').value = val;
+        }
+
+        function simulateGps() {
+            const lat = (40.71 + Math.random() * 0.01).toFixed(4);
+            const lng = (-74.00 - Math.random() * 0.01).toFixed(4);
+            document.getElementById('latInput').value = lat;
+            document.getElementById('lngInput').value = lng;
+            document.getElementById('gpsCoords').textContent = lat + ', ' + lng;
+            document.getElementById('gpsStatus').classList.remove('d-none');
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.wizard-step-panel').forEach((p, idx) => {
+                p.classList.toggle('active', idx === step - 1);
+            });
+
+            document.querySelectorAll('.wizard-node').forEach((node, idx) => {
+                if (idx < step - 1) {
+                    node.className = 'wizard-node completed';
+                    node.textContent = '✓';
+                } else if (idx === step - 1) {
+                    node.className = 'wizard-node active';
+                    node.textContent = idx + 1;
+                } else {
+                    node.className = 'wizard-node';
+                    node.textContent = idx + 1;
+                }
+            });
+
+            document.getElementById('prevBtn').classList.toggle('d-none', step === 1);
+            document.getElementById('nextBtn').classList.toggle('d-none', step === totalSteps);
+            document.getElementById('submitBtn').classList.toggle('d-none', step !== totalSteps);
+        }
+
+        function nextStep() {
+            if (currentStep === 1) {
+                const cat = document.getElementById('issueCategory').value;
+                if (!cat) { alert("Please select an issue category."); return; }
+            }
+            if (currentStep === 2) {
+                const title = document.getElementById('issueTitle').value;
+                const desc = document.getElementById('issueDesc').value;
+                if (!title || !desc) { alert("Please enter the title and description."); return; }
+            }
+            if (currentStep === 3) {
+                const loc = document.getElementById('issueLoc').value;
+                if (!loc) { alert("Please enter the location address."); return; }
+            }
+
+            if (currentStep < totalSteps) {
+                currentStep++;
+                if (currentStep === 5) {
+                    populatePreview();
+                }
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        // --- File Staging & Validation Logic ---
+        function triggerFileSelector() {
+            // Dynamically click hidden browse inputs depending on what the user wants to upload
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.multiple = true;
+            input.accept = "image/png, image/jpeg, image/jpg, video/mp4, video/quicktime";
+            input.onchange = (e) => {
+                handleAddedFiles(e.target.files);
+            };
+            input.click();
+        }
+
+        // Drag and Drop listeners
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleAddedFiles(e.dataTransfer.files);
+        });
+
+        function handleAddedFiles(filesList) {
+            for (let file of filesList) {
+                const isImage = file.type.startsWith('image/');
+                const isVideo = file.type.startsWith('video/');
+
+                if (!isImage && !isVideo) {
+                    alert(`Rejected: "${file.name}" is not a supported file format.`);
+                    continue;
+                }
+
+                if (isImage) {
+                    if (stagedImages.length >= 5) {
+                        alert("Limit reached: You can attach a maximum of 5 images.");
+                        continue;
+                    }
+                    stagedImages.push(file);
+                } else if (isVideo) {
+                    if (stagedVideo !== null) {
+                        alert("Limit reached: You can attach a maximum of 1 video file.");
+                        continue;
+                    }
+                    if (file.size > 100 * 1024 * 1024) {
+                        alert(`Rejected: Video "${file.name}" exceeds the 100MB size limit.`);
+                        continue;
+                    }
+                    stagedVideo = file;
+                }
+            }
+            renderThumbnails();
+        }
+
+        function removeImage(idx) {
+            stagedImages.splice(idx, 1);
+            renderThumbnails();
+        }
+
+        function removeVideo() {
+            stagedVideo = null;
+            renderThumbnails();
+        }
+
+        function renderThumbnails() {
+            const grid = document.getElementById('thumbnailsGrid');
+            grid.innerHTML = '';
+
+            // Render images
+            stagedImages.forEach((file, idx) => {
+                const url = URL.createObjectURL(file);
+                const col = document.createElement('div');
+                col.className = 'col-4 col-sm-3';
+                col.innerHTML = `
+                    <div class="thumb-preview-box">
+                        <button type="button" class="btn-thumb-remove" onclick="removeImage(${idx})">×</button>
+                        <img src="${url}" class="thumb-img" alt="preview">
+                        <div class="small text-truncate mt-1 text-muted" style="font-size:0.7rem;">${file.name}</div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+
+            // Render video
+            if (stagedVideo) {
+                const col = document.createElement('div');
+                col.className = 'col-4 col-sm-3';
+                col.innerHTML = `
+                    <div class="thumb-preview-box">
+                        <button type="button" class="btn-thumb-remove" onclick="removeVideo()">×</button>
+                        <div class="thumb-video-icon">🎥</div>
+                        <div class="small text-truncate mt-1 text-muted" style="font-size:0.7rem;">${stagedVideo.name}</div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            }
+        }
+
+        // --- WebRTC Camera Snapshot & Recording logic ---
+        function startCamera() {
+            document.getElementById('cameraBlock').classList.remove('d-none');
+            document.getElementById('captureBtn').classList.remove('d-none');
+            document.getElementById('stopRecordBtn').classList.add('d-none');
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                .then(stream => {
+                    webcamStream = stream;
+                    document.getElementById('webcam').srcObject = stream;
+                })
+                .catch(err => {
+                    alert("Camera access denied or unsupported on this device.");
+                    closeCamera();
+                });
+        }
+
+        function takeSnapshot() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('photoCanvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob(blob => {
+                const file = new File([blob], "camera_capture_" + Date.now() + ".jpg", { type: "image/jpeg" });
+                handleAddedFiles([file]);
+                closeCamera();
+            }, 'image/jpeg');
+        }
+
+        function startVideoRecording() {
+            document.getElementById('cameraBlock').classList.remove('d-none');
+            document.getElementById('captureBtn').classList.add('d-none');
+            document.getElementById('stopRecordBtn').classList.remove('d-none');
+            recordedChunks = [];
+
+            navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                .then(stream => {
+                    webcamStream = stream;
+                    document.getElementById('webcam').srcObject = stream;
+                    
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) recordedChunks.push(e.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                        const file = new File([blob], "recorded_video_" + Date.now() + ".mp4", { type: 'video/mp4' });
+                        handleAddedFiles([file]);
+                    };
+                    mediaRecorder.start();
+                })
+                .catch(err => {
+                    alert("Microphone/Camera access denied or unsupported.");
+                    closeCamera();
+                });
+        }
+
+        function stopVideoRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            closeCamera();
+        }
+
+        function closeCamera() {
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('cameraBlock').classList.add('d-none');
+        }
+
+        function populatePreview() {
+            document.getElementById('previewCat').textContent = document.getElementById('issueCategory').value;
+            document.getElementById('previewTitle').textContent = document.getElementById('issueTitle').value;
+            document.getElementById('previewLoc').textContent = document.getElementById('issueLoc').value;
+            document.getElementById('previewDesc').textContent = document.getElementById('issueDesc').value;
+            
+            const lat = document.getElementById('latInput').value;
+            const lng = document.getElementById('lngInput').value;
+            document.getElementById('previewGps').textContent = (lat && lng) ? (lat + ', ' + lng) : "Not captured";
+
+            // Count staged files for preview text
+            let filesDesc = "";
+            if (stagedImages.length > 0) filesDesc += stagedImages.length + " Image(s) ";
+            if (stagedVideo) filesDesc += "1 Video file ";
+            document.getElementById('previewFiles').textContent = filesDesc || "No files attached (Optional)";
+        }
+
+        // --- Submission & File Feed logic ---
+        function handleSubmit() {
+            // 1. Populate the actual hidden file inputs utilizing the DataTransfer API
+            const dtImages = new DataTransfer();
+            stagedImages.forEach(file => dtImages.items.add(file));
+            document.getElementById('imageFilesInput').files = dtImages.files;
+
+            if (stagedVideo) {
+                const dtVideo = new DataTransfer();
+                dtVideo.items.add(stagedVideo);
+                document.getElementById('videoFileInput').files = dtVideo.files;
+            }
+
+            // 2. Play simulated progress animation
+            document.getElementById('uploadProgressContainer').classList.remove('d-none');
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                document.getElementById('uploadProgressBar').style.width = progress + '%';
+                document.getElementById('progressText').textContent = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    // 3. Submit form POST
+                    document.getElementById('wizardForm').submit();
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

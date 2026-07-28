@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CivicPulse - Complete Profile</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS variables -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #eff6ff 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 0;
+        }
+        .onboard-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            width: 100%;
+            padding: 3rem 2.5rem;
+        }
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+        }
+        .dot.active {
+            background-color: var(--primary-color);
+            width: 24px;
+            border-radius: 6px;
+        }
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 2.25rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="onboard-card">
+        <!-- Progress Steps Tracker -->
+        <div class="progress-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot active"></div>
+        </div>
+
+        <div class="text-center mb-4">
+            <!-- Dynamic Avatar Preview -->
+            <div class="avatar-circle" id="avatarPreview" th:text="${avatarChar}">J</div>
+            <h3 class="fw-extrabold text-dark mb-1">Verify Contact Profile</h3>
+            <p class="text-muted small">Final step to link your account notification channels</p>
+        </div>
+
+        <form th:action="@{/onboarding/profile}" method="POST">
+            <div class="mb-3">
+                <label class="form-label small fw-bold">Contact Phone Number</label>
+                <input type="text" name="phone" class="form-control form-control-lg fs-6" placeholder="+1 555-0199" required>
+                <div class="form-text small text-muted">
+                    We will send SMS notifications when your complaints change status.
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-bold">Choose Display Icon character</label>
+                <input type="text" name="avatarChar" class="form-control form-control-lg fs-6 text-center fw-bold" 
+                       id="avatarCharInput" th:value="${avatarChar}" maxlength="1" oninput="updateAvatarPreview(this.value)" required>
+                <div class="form-text small text-muted text-center">
+                    A single letter or emoji to display as your profile avatar icon.
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between gap-3 mt-4">
+                <a th:href="@{/onboarding/locality}" class="btn btn-secondary-custom py-2 px-4 w-50">Back</a>
+                <button type="submit" class="btn btn-primary-custom py-2 px-4 w-50">Finish Setup</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateAvatarPreview(val) {
+            const preview = document.getElementById('avatarPreview');
+            preview.textContent = val ? val.toUpperCase() : '?';
+        }
+    </script>
+</body>
+</html>

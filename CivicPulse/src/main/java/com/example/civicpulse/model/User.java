@@ -23,7 +23,13 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // "USER" or "ADMIN"
+    private String role; // "USER", "OFFICER", "ADMIN"
+
+    private String city;
+    private String locality;
+    private String phone;
+    private String avatarChar;
+    private boolean isFirstTime = true;
 
     @Transient // Not saved to the database, used for form verification
     private String confirmPassword;
@@ -34,6 +40,7 @@ public class User {
     // Default constructor
     public User() {
         this.role = "USER"; // Default role
+        this.isFirstTime = true;
     }
 
     // Parameterized constructor
@@ -43,6 +50,9 @@ public class User {
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;
+        if (fullName != null && !fullName.isEmpty()) {
+            this.avatarChar = fullName.substring(0, 1).toUpperCase();
+        }
     }
 
     // Getters and Setters
@@ -60,6 +70,9 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+        if (fullName != null && !fullName.isEmpty()) {
+            this.avatarChar = fullName.substring(0, 1).toUpperCase();
+        }
     }
 
     public String getEmail() {
@@ -84,6 +97,46 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAvatarChar() {
+        return avatarChar;
+    }
+
+    public void setAvatarChar(String avatarChar) {
+        this.avatarChar = avatarChar;
+    }
+
+    public boolean isFirstTime() {
+        return isFirstTime;
+    }
+
+    public void setFirstTime(boolean firstTime) {
+        isFirstTime = firstTime;
     }
 
     public String getConfirmPassword() {

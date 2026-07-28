@@ -5,8 +5,7 @@ import com.example.civicpulse.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,62 +19,52 @@ public class UserService {
     }
 
     // 1. Register a new user
-    public User register(User user) throws Exception {
-        // Validate email uniqueness
+    public User register(User user) {
+        // Validation checks
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Full Name is required");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (user.getPassword() == null || user.getPassword().length() < 6) {
+            throw new IllegalArgumentException("Password must be at least 6 characters long");
+        }
+        if (!user.getPassword().equals(user.getConfirmPassword()) && user.getId() == null) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        // Email uniqueness check
         Optional<User> existing = userRepository.findByEmail(user.getEmail());
         if (existing.isPresent()) {
-            throw new IllegalArgumentException("An account with this email already exists.");
+            throw new IllegalArgumentException("Email is already registered");
         }
 
-        // Validate passwords match
-        if (!user.getPassword().equals(user.getConfirmPassword())) {
-            throw new IllegalArgumentException("Passwords do not match.");
-        }
-
-        // Hash password
-        String hashedPassword = hashPassword(user.getPassword());
-        user.setPassword(hashedPassword);
+        // Set default onboarding avatar character
+        user.setAvatarChar(user.getFullName().substring(0, 1).toUpperCase());
 
         return userRepository.save(user);
     }
 
-    // 2. Authenticate user
+    // 2. Authenticate user logins
     public User authenticate(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
-            return null;
-        }
-
-        User user = userOpt.get();
-        String hashedPassword = hashPassword(password);
-        if (user.getPassword().equals(hashedPassword)) {
-            return user;
-        }
-        
-        return null;
+        return userRepository.findByEmail(email)
+                .filter(u -> u.getPassword().equals(password))
+                .orElse(null);
     }
 
-    // 3. Find User by Email
+    // 3. Find user by email
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    // SHA-256 hashing utility
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (Exception ex) {
-            throw new RuntimeException("Error hashing password", ex);
-        }
+    // 4. Update existing user profile
+    public void updateUserProfile(User user) {
+        userRepository.save(user);
+    }
+
+    // 5. Find users by role (e.g. OFFICER)
+    public List<User> findUsersByRole(String role) {
+        return userRepository.findByRole(role);
     }
 }
